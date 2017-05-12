@@ -77,12 +77,12 @@ def get_credentials():
 def get_news():
     news_feed = 'http://hosted2.ap.org/atom/APDEFAULT/3d281c11a96b4ad082fe88aa0db04305'
     feed = feedparser.parse(news_feed)
-    x = 1
+    x = 2
     latest_x_stories = []
     count = 0
     while count < x:
         #2017-05-10T11:54:57-04:00
-        title = feed.entries[0].title
+        title = feed.entries[count].title
         story_time = time.strptime(feed.entries[count].updated, '%Y-%m-%dT%H:%M:%S-04:00')
         time_formatted = time.strftime('%I:%M%p',story_time)
         story = feed.entries[count].summary_detail.value
@@ -121,10 +121,13 @@ def main():
 
     if not all_events:
         print('No upcoming events found.')
+
+    output = []
+
     for event in all_events:
         location = ""
         try:
-            location = "({0})".format(event['location'])
+            location = "({0})".format(event['location']).replace("\n", " ")
             pass
         #handling keyerror if no location given
         except KeyError:
@@ -134,12 +137,17 @@ def main():
         start_formatted = time.strftime('%I:%M%p',time.strptime(start, '%Y-%m-%dT%H:%M:%S-04:00'))
         end_formatted = time.strftime('%I:%M%p',time.strptime(end, '%Y-%m-%dT%H:%M:%S-04:00'))
         duration = "{0}-{1}".format(start_formatted,end_formatted)
-        print("{0}: {1} {2}".format(duration, event['summary'],location))
+        d = {"start": start, "end": end, "location": location, "summary":event['summary'], "duration": duration}
+        output.append(d)
+        #print("{0}: {1} {2}".format(duration, event['summary'],location))
+    ordered = sorted(output, key=lambda k: k['start']) 
+    for e in ordered:
+        print("{0}: {1} {2}".format(e['duration'], e['summary'],e['location']))
 
 
 if __name__ == '__main__':
     main()
     print(format_weather(get_weather()))
     for x in get_news():
-        print(x['title'])
+        print("News: {0}".format(x['title']))
     #print(format_weather(get_weather()))
