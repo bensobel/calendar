@@ -135,14 +135,22 @@ def main():
     #get all calendars
     calendar_list = [item['id'] for item in service.calendarList().list().execute().get('items',[])]
 
+    TODO_ID = 'bensobel.com_ipvtvckn2pv1u0tafontcqllks@group.calendar.google.com'
+
     all_events = []
+
+    todos = []
+
     #make sure to get all calendars
     for cal in calendar_list:
         eventsResult = service.events().list(
             calendarId=cal, timeMin=now, timeMax=tmrw, maxResults=10, singleEvents=True,
             orderBy='startTime').execute()
         events = eventsResult.get('items', [])
-        all_events += events
+        if cal == TODO_ID:
+            todos += events
+        else:
+            all_events += events
 
     if not all_events:
         print('No upcoming events found.')
@@ -175,9 +183,26 @@ def main():
         start = event['start'].get('dateTime', event['start'].get('date'))
         #date = datetime.datetime.strptime(start, '%Y-%m-%dT%H:%M:%S-04:00').date()
         end = event['end'].get('dateTime', event['end'].get('date'))
-        start_formatted = time.strftime('%I:%M%p',time.strptime(start, '%Y-%m-%dT%H:%M:%S-04:00'))
-        end_formatted = time.strftime('%I:%M%p (%m/%d)',time.strptime(end, '%Y-%m-%dT%H:%M:%S-04:00'))
-        duration = "{0}-{1}".format(start_formatted,end_formatted)
+
+        all_day = False
+
+        try:
+            start_formatted = time.strftime('%I:%M%p',time.strptime(start, '%Y-%m-%dT%H:%M:%S-04:00'))
+        except ValueError:
+            start_formatted = ""
+            all_day = True
+
+        try:
+            end_formatted = time.strftime('%I:%M%p',time.strptime(end, '%Y-%m-%dT%H:%M:%S-04:00'))
+        except ValueError:
+            end_formatted = ""
+            all_day = True
+
+        if not all_day:
+            duration = "{0}-{1}".format(start_formatted,end_formatted)
+        if all_day:
+            duration = "All day"
+            
         d = {"start": start, "end": end, "location": location, "summary":event['summary'], "duration": duration}
         output.append(d)
         #print("{0}: {1} {2}".format(duration, event['summary'],location))
@@ -186,6 +211,19 @@ def main():
         #if e['date'] == local_now.date():
         printer.println("{0}: {1} ({2})".format(e['duration'], e['summary'],e['location']))
         printer.feed(1)
+
+    #TODO List#
+    printer.setSize('M')
+    printer.justify('C')
+    printer.underlineOn()
+    printer.println("To-do:")
+    printer.underlineOff()
+    printer.justify('L')
+    printer.setSize('S')
+    printer.feed(1)
+
+    for t in todos:
+        printer.println(t['summary'])
 
     printer.feed(3)
     printer.sleep()
