@@ -86,7 +86,7 @@ def get_credentials():
 def get_news():
     news_feed = 'http://hosted2.ap.org/atom/APDEFAULT/3d281c11a96b4ad082fe88aa0db04305'
     feed = feedparser.parse(news_feed)
-    x = 2
+    x = 1
     latest_x_stories = []
     count = 0
     while count < x:
@@ -118,8 +118,12 @@ def main():
     tmrw = (datetime.datetime.utcnow()+datetime.timedelta(days=1)).isoformat() + 'Z'
     local_now = datetime.datetime.now()
     
-    printer.println(local_now.strftime('%A, %B %d, %Y'))
+    printer.setSize('L')
+    printer.justify('C')
+    printer.println(local_now.strftime('%a, %b %d, \'%y'))
     printer.feed(2)
+    printer.justify('L')
+    printer.setSize('S')
     #print('Getting the upcoming 10 events')
 
     #get all calendars
@@ -158,7 +162,7 @@ def main():
             pass
         start = event['start'].get('dateTime', event['start'].get('date'))
         end = event['end'].get('dateTime', event['end'].get('date'))
-        start_formatted = time.strftime('%I:%M%p',time.strptime(start, '%Y-%m-%dT%H:%M:%S-04:00'))
+        start_formatted = time.strftime('%m/%d, %I:%M%p',time.strptime(start, '%Y-%m-%dT%H:%M:%S-04:00'))
         end_formatted = time.strftime('%I:%M%p',time.strptime(end, '%Y-%m-%dT%H:%M:%S-04:00'))
         duration = "{0}-{1}".format(start_formatted,end_formatted)
         d = {"start": start, "end": end, "location": location, "summary":event['summary'], "duration": duration}
