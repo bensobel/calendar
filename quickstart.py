@@ -117,7 +117,9 @@ def main():
     now = datetime.datetime.utcnow().isoformat() + 'Z' # 'Z' indicates UTC time
     tmrw = (datetime.datetime.utcnow()+datetime.timedelta(days=1)).isoformat() + 'Z'
     local_now = datetime.datetime.now()
-    #print(local_now.strftime('%A, %B %d, %Y'))
+    
+    printer.println(local_now.strftime('%A, %B %d, %Y'))
+    printer.feed(2)
     #print('Getting the upcoming 10 events')
 
     #get all calendars
@@ -167,6 +169,7 @@ def main():
         printer.println("{0}: {1} {2}".format(e['duration'], e['summary'],e['location']))
         printer.feed(1)
 
+    printer.feed(2)
     printer.sleep()
 
 
