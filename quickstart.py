@@ -1,5 +1,6 @@
 from __future__ import print_function
 import httplib2
+import sys
 import os
 
 import requests
@@ -18,6 +19,14 @@ import json
 import feedparser
 
 import settings
+
+PATH_TO_PRINTER = os.path.join(os.getcwd(),'Python-Thermal-Printer')
+
+sys.path.append(PATH_TO_PRINTER)
+
+from Adafruit_Thermal import *
+
+printer = Adafruit_Thermal("/dev/ttyUSB0", 9600, timeout=5)
 
 try:
     import argparse
@@ -147,7 +156,8 @@ def main():
 
 if __name__ == '__main__':
     main()
-    print(format_weather(get_weather()))
+    printer.justify('R')
+    printer.println(format_weather(get_weather()))
     for x in get_news():
         print("News: {0}".format(x['title']))
     #print(format_weather(get_weather()))
