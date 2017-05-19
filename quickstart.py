@@ -147,10 +147,10 @@ def main():
 
     printer.println("Weather: {0}".format(format_weather(get_weather())))
     printer.feed(1)
-    for x in get_news():
-                    printer.println("News: {0}".format(x['detail']))
-
-    printer.feed(1)
+    '''for x in get_news():
+                                printer.println("News: {0}".format(x['detail']))
+            
+                printer.feed(1)'''
     printer.setSize('M')
     printer.justify('C')
     printer.underlineOn()
