@@ -118,9 +118,11 @@ def main():
     tmrw = (datetime.datetime.utcnow()+datetime.timedelta(days=1)).isoformat() + 'Z'
     local_now = datetime.datetime.now()
     
-    printer.setSize('L')
+    printer.setSize('M')
     printer.justify('C')
+    printer.boldOn()
     printer.println(local_now.strftime('%a, %b %d, \'%y'))
+    printer.boldOff()
     printer.feed(2)
     printer.justify('L')
     printer.setSize('S')
@@ -143,35 +145,43 @@ def main():
 
     output = []
 
-    printer.println("Today's weather: {0}".format(format_weather(get_weather())))
+    printer.println("Weather: {0}".format(format_weather(get_weather())))
     printer.feed(1)
     for x in get_news():
-        printer.println("News: {0}".format(x['title']))
+                    printer.println("News: {0}".format(x['detail']))
 
     printer.feed(1)
-    printer.println("Your calendar:")
+    printer.setSize('M')
+    printer.justify('C')
+    printer.underlineOn()
+    printer.println("Calendar:")
+    printer.underlineOff()
+    printer.justify('L')
+    printer.setSize('S')
     printer.feed(1)
 
     for event in all_events:
         location = ""
         try:
-            location = "({0})".format(event['location']).replace("\n", " ")
+            location = "{0}".format(event['location']).replace("\n", " ")
             pass
         #handling keyerror if no location given
         except KeyError:
             pass
         start = event['start'].get('dateTime', event['start'].get('date'))
+        date = datetime.datetime.strptime(start, '%Y-%m-%dT%H:%M:%S-04:00').date()
         end = event['end'].get('dateTime', event['end'].get('date'))
-        start_formatted = time.strftime('%m/%d, %I:%M%p',time.strptime(start, '%Y-%m-%dT%H:%M:%S-04:00'))
-        end_formatted = time.strftime('%I:%M%p',time.strptime(end, '%Y-%m-%dT%H:%M:%S-04:00'))
+        start_formatted = time.strftime('%I:%M%p',time.strptime(start, '%Y-%m-%dT%H:%M:%S-04:00'))
+        end_formatted = time.strftime('%I:%M%p (%m/%d)',time.strptime(end, '%Y-%m-%dT%H:%M:%S-04:00'))
         duration = "{0}-{1}".format(start_formatted,end_formatted)
-        d = {"start": start, "end": end, "location": location, "summary":event['summary'], "duration": duration}
+        d = {"start": start, "end": end, "location": location, "summary":event['summary'], "duration": duration, "date":date}
         output.append(d)
         #print("{0}: {1} {2}".format(duration, event['summary'],location))
     ordered = sorted(output, key=lambda k: k['start']) 
     for e in ordered:
-        printer.println("{0}: {1} {2}".format(e['duration'], e['summary'],e['location']))
-        printer.feed(1)
+        if e['date'] == local_now.date():
+            printer.println("{0}: {1} ({2})".format(e['duration'], e['summary'],e['location']))
+            printer.feed(1)
 
     printer.feed(2)
     printer.sleep()
