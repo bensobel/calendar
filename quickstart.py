@@ -115,12 +115,13 @@ def main():
     service = discovery.build('calendar', 'v3', http=http)
 
     now = datetime.datetime.utcnow().isoformat() + 'Z' # 'Z' indicates UTC time
-    tmrw = (datetime.datetime.utcnow()+datetime.timedelta(days=1)).isoformat() + 'Z'
+    tmrw = (datetime.datetime.utcnow()+datetime.timedelta(hours=18)).isoformat() + 'Z'
     local_now = datetime.datetime.now()
     
     printer.setSize('M')
     printer.justify('C')
     printer.boldOn()
+    printer.println("Ben's day:\n")
     printer.println(local_now.strftime('%a, %b %d, \'%y'))
     printer.boldOff()
     printer.feed(2)
@@ -169,19 +170,19 @@ def main():
         except KeyError:
             pass
         start = event['start'].get('dateTime', event['start'].get('date'))
-        date = datetime.datetime.strptime(start, '%Y-%m-%dT%H:%M:%S-04:00').date()
+        #date = datetime.datetime.strptime(start, '%Y-%m-%dT%H:%M:%S-04:00').date()
         end = event['end'].get('dateTime', event['end'].get('date'))
         start_formatted = time.strftime('%I:%M%p',time.strptime(start, '%Y-%m-%dT%H:%M:%S-04:00'))
         end_formatted = time.strftime('%I:%M%p (%m/%d)',time.strptime(end, '%Y-%m-%dT%H:%M:%S-04:00'))
         duration = "{0}-{1}".format(start_formatted,end_formatted)
-        d = {"start": start, "end": end, "location": location, "summary":event['summary'], "duration": duration, "date":date}
+        d = {"start": start, "end": end, "location": location, "summary":event['summary'], "duration": duration}
         output.append(d)
         #print("{0}: {1} {2}".format(duration, event['summary'],location))
     ordered = sorted(output, key=lambda k: k['start']) 
     for e in ordered:
-        if e['date'] == local_now.date():
-            printer.println("{0}: {1} ({2})".format(e['duration'], e['summary'],e['location']))
-            printer.feed(1)
+        #if e['date'] == local_now.date():
+        printer.println("{0}: {1} ({2})".format(e['duration'], e['summary'],e['location']))
+        printer.feed(1)
 
     printer.feed(2)
     printer.sleep()
