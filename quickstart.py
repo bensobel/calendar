@@ -106,6 +106,10 @@ def main():
     Creates a Google Calendar API service object and outputs a list of the next
     10 events on the user's calendar.
     """
+    printer.setDefault() 
+
+    printer.wake() 
+
     credentials = get_credentials()
     http = credentials.authorize(httplib2.Http())
     service = discovery.build('calendar', 'v3', http=http)
@@ -133,6 +137,15 @@ def main():
 
     output = []
 
+    printer.println("Today's weather: {0}".format(format_weather(get_weather())))
+    printer.feed(1)
+    for x in get_news():
+        printer.println("News: {0}".format(x['title']))
+
+    printer.feed(1)
+    printer.println("Your calendar:")
+    printer.feed(1)
+
     for event in all_events:
         location = ""
         try:
@@ -151,13 +164,13 @@ def main():
         #print("{0}: {1} {2}".format(duration, event['summary'],location))
     ordered = sorted(output, key=lambda k: k['start']) 
     for e in ordered:
-        print("{0}: {1} {2}".format(e['duration'], e['summary'],e['location']))
+        printer.println("{0}: {1} {2}".format(e['duration'], e['summary'],e['location']))
+        printer.feed(1)
+
+    printer.sleep()
 
 
 if __name__ == '__main__':
-    main()
-    printer.justify('R')
-    printer.println(format_weather(get_weather()))
-    for x in get_news():
-        print("News: {0}".format(x['title']))
+    main()    
+    
     #print(format_weather(get_weather()))
