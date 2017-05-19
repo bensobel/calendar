@@ -187,7 +187,7 @@ def main():
         printer.println("{0}: {1} ({2})".format(e['duration'], e['summary'],e['location']))
         printer.feed(1)
 
-    printer.feed(2)
+    printer.feed(3)
     printer.sleep()
 
 
