@@ -102,12 +102,6 @@ def get_news():
     return latest_x_stories
 
 def main():
-    """Shows basic usage of the Google Calendar API.
-
-    Creates a Google Calendar API service object and outputs a list of the next
-    10 events on the user's calendar.
-    """
-    
 
     credentials = get_credentials()
     http = credentials.authorize(httplib2.Http())
@@ -116,8 +110,10 @@ def main():
     #get all calendars
     calendar_list = [item['id'] for item in service.calendarList().list().execute().get('items',[])]
 
+    #ID of my Todoist TODO list
     TODO_ID = 'bensobel.com_ipvtvckn2pv1u0tafontcqllks@group.calendar.google.com'
 
+    #initialize lists of events and todos
     all_events = []
 
     todos = []
@@ -192,12 +188,14 @@ def main():
 
                 try:
                     start_formatted = time.strftime('%I:%M%p',time.strptime(start, '%Y-%m-%dT%H:%M:%S-04:00'))
+                #if time is formatted weird let's call it an all-day event
                 except ValueError:
                     start_formatted = ""
                     all_day = True
 
                 try:
                     end_formatted = time.strftime('%I:%M%p',time.strptime(end, '%Y-%m-%dT%H:%M:%S-04:00'))
+                #if time is formatted weird let's call it an all-day event
                 except ValueError:
                     end_formatted = ""
                     all_day = True
@@ -233,12 +231,11 @@ def main():
         printer.feed(3)
         printer.sleep()
 
-    #else there are no events and todos, so put printer back to sleep
+    #else there are no events and todos, so do nothing
     else:
-        printer.sleep()
+        pass
 
 
 if __name__ == '__main__':
     main()    
     
-    #print(format_weather(get_weather()))
