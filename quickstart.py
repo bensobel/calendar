@@ -107,31 +107,11 @@ def main():
     Creates a Google Calendar API service object and outputs a list of the next
     10 events on the user's calendar.
     """
-    printer.setDefault() 
-
-    printer.wake() 
+    
 
     credentials = get_credentials()
     http = credentials.authorize(httplib2.Http())
     service = discovery.build('calendar', 'v3', http=http)
-
-    now = datetime.datetime.utcnow().isoformat() + 'Z' # 'Z' indicates UTC time
-    ##
-    ## CHANGE HOURS=18 ACCORDINGLY IF YOU PRINT AT A TIME OTHER THAN 06:00 
-    ##
-    tmrw = (datetime.datetime.utcnow()+datetime.timedelta(hours=18)).isoformat() + 'Z'
-    local_now = datetime.datetime.now()
-    
-    printer.setSize('M')
-    printer.justify('C')
-    printer.boldOn()
-    printer.println("Ben's day:\n")
-    printer.println(local_now.strftime('%a, %b %d, \'%y'))
-    printer.boldOff()
-    printer.feed(2)
-    printer.justify('L')
-    printer.setSize('S')
-    #print('Getting the upcoming 10 events')
 
     #get all calendars
     calendar_list = [item['id'] for item in service.calendarList().list().execute().get('items',[])]
@@ -153,81 +133,109 @@ def main():
         else:
             all_events += events
 
-    if not all_events:
-        print('No upcoming events found.')
+    if (len(all_events) > 0) or (len(todos) > 0):
+        output = []
 
-    output = []
+        printer.setDefault() 
 
-    printer.println("Weather: {0}".format(format_weather(get_weather())))
-    printer.feed(1)
-    '''for x in get_news():
-                                printer.println("News: {0}".format(x['detail']))
-            
-                printer.feed(1)'''
-    printer.setSize('M')
-    printer.justify('C')
-    printer.underlineOn()
-    printer.println("Calendar:")
-    printer.underlineOff()
-    printer.justify('L')
-    printer.setSize('S')
-    printer.feed(1)
+        printer.wake() 
 
-    for event in all_events:
-        location = ""
-        try:
-            location = "{0}".format(event['location']).replace("\n", " ")
-            pass
-        #handling keyerror if no location given
-        except KeyError:
-            pass
-        start = event['start'].get('dateTime', event['start'].get('date'))
-        #date = datetime.datetime.strptime(start, '%Y-%m-%dT%H:%M:%S-04:00').date()
-        end = event['end'].get('dateTime', event['end'].get('date'))
+        now = datetime.datetime.utcnow().isoformat() + 'Z' # 'Z' indicates UTC time
+        ##
+        ## CHANGE HOURS=18 ACCORDINGLY IF YOU PRINT AT A TIME OTHER THAN 06:00 
+        ##
+        tmrw = (datetime.datetime.utcnow()+datetime.timedelta(hours=18)).isoformat() + 'Z'
+        local_now = datetime.datetime.now()
+        
+        printer.setSize('M')
+        printer.justify('C')
+        printer.boldOn()
+        printer.println("Ben's day:\n")
+        printer.println(local_now.strftime('%a, %b %d, \'%y'))
+        printer.boldOff()
+        printer.feed(2)
+        printer.justify('L')
+        printer.setSize('S')
+        #print('Getting the upcoming 10 events')
 
-        all_day = False
+        
 
-        try:
-            start_formatted = time.strftime('%I:%M%p',time.strptime(start, '%Y-%m-%dT%H:%M:%S-04:00'))
-        except ValueError:
-            start_formatted = ""
-            all_day = True
-
-        try:
-            end_formatted = time.strftime('%I:%M%p',time.strptime(end, '%Y-%m-%dT%H:%M:%S-04:00'))
-        except ValueError:
-            end_formatted = ""
-            all_day = True
-
-        if not all_day:
-            duration = "{0}-{1}".format(start_formatted,end_formatted)
-        if all_day:
-            duration = "All day"
-            
-        d = {"start": start, "end": end, "location": location, "summary":event['summary'], "duration": duration}
-        output.append(d)
-        #print("{0}: {1} {2}".format(duration, event['summary'],location))
-    ordered = sorted(output, key=lambda k: k['start']) 
-    for e in ordered:
-        #if e['date'] == local_now.date():
-        printer.println("{0}: {1} ({2})".format(e['duration'], e['summary'],e['location']))
+        printer.println("Weather: {0}".format(format_weather(get_weather())))
         printer.feed(1)
+        '''for x in get_news():
+                                    printer.println("News: {0}".format(x['detail']))
+                
+                    printer.feed(1)'''
+        if (len(all_events) > 0):
+            printer.setSize('M')
+            printer.justify('C')
+            printer.underlineOn()
+            printer.println("Calendar:")
+            printer.underlineOff()
+            printer.justify('L')
+            printer.setSize('S')
+            printer.feed(1)
 
-    #TODO List#
-    printer.setSize('M')
-    printer.justify('C')
-    printer.underlineOn()
-    printer.println("To-do:")
-    printer.underlineOff()
-    printer.justify('L')
-    printer.setSize('S')
-    printer.feed(1)
+            for event in all_events:
+                location = ""
+                try:
+                    location = "{0}".format(event['location']).replace("\n", " ")
+                    pass
+                #handling keyerror if no location given
+                except KeyError:
+                    pass
+                start = event['start'].get('dateTime', event['start'].get('date'))
+                #date = datetime.datetime.strptime(start, '%Y-%m-%dT%H:%M:%S-04:00').date()
+                end = event['end'].get('dateTime', event['end'].get('date'))
 
-    for t in todos:
-        printer.println(t['summary'])
+                all_day = False
 
-    printer.feed(3)
-    printer.sleep()
+                try:
+                    start_formatted = time.strftime('%I:%M%p',time.strptime(start, '%Y-%m-%dT%H:%M:%S-04:00'))
+                except ValueError:
+                    start_formatted = ""
+                    all_day = True
+
+                try:
+                    end_formatted = time.strftime('%I:%M%p',time.strptime(end, '%Y-%m-%dT%H:%M:%S-04:00'))
+                except ValueError:
+                    end_formatted = ""
+                    all_day = True
+
+                if not all_day:
+                    duration = "{0}-{1}".format(start_formatted,end_formatted)
+                if all_day:
+                    duration = "All day"
+                    
+                d = {"start": start, "end": end, "location": location, "summary":event['summary'], "duration": duration}
+                output.append(d)
+                #print("{0}: {1} {2}".format(duration, event['summary'],location))
+            ordered = sorted(output, key=lambda k: k['start']) 
+            for e in ordered:
+                #if e['date'] == local_now.date():
+                printer.println("{0}: {1} ({2})".format(e['duration'], e['summary'],e['location']))
+                printer.feed(1)
+
+        #TODO List#
+        if len(todos) > 0:
+            printer.setSize('M')
+            printer.justify('C')
+            printer.underlineOn()
+            printer.println("To-do:")
+            printer.underlineOff()
+            printer.justify('L')
+            printer.setSize('S')
+            printer.feed(1)
+
+            for t in todos:
+                printer.println(t['summary'])
+
+        printer.feed(3)
+        printer.sleep()
+
+    #else there are no events and todos, so put printer back to sleep
+    else:
+        printer.sleep()
 
 
 if __name__ == '__main__':
