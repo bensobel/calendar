@@ -107,6 +107,13 @@ def main():
     http = credentials.authorize(httplib2.Http())
     service = discovery.build('calendar', 'v3', http=http)
 
+    now = datetime.datetime.utcnow().isoformat() + 'Z' # 'Z' indicates UTC time
+    ##
+    ## CHANGE HOURS=18 ACCORDINGLY IF YOU PRINT AT A TIME OTHER THAN 06:00 
+    ##
+    tmrw = (datetime.datetime.utcnow()+datetime.timedelta(hours=18)).isoformat() + 'Z'
+    local_now = datetime.datetime.now()
+
     #get all calendars
     calendar_list = [item['id'] for item in service.calendarList().list().execute().get('items',[])]
 
@@ -136,12 +143,6 @@ def main():
 
         printer.wake() 
 
-        now = datetime.datetime.utcnow().isoformat() + 'Z' # 'Z' indicates UTC time
-        ##
-        ## CHANGE HOURS=18 ACCORDINGLY IF YOU PRINT AT A TIME OTHER THAN 06:00 
-        ##
-        tmrw = (datetime.datetime.utcnow()+datetime.timedelta(hours=18)).isoformat() + 'Z'
-        local_now = datetime.datetime.now()
         
         printer.setSize('M')
         printer.justify('C')
