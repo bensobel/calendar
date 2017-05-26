@@ -107,7 +107,7 @@ def get_news():
         count +=1
     return latest_x_stories
 
-def printheader(printer=printer,txt):
+def printheader(txt,printer=printer):
     printer.setSize('M')
     printer.justify('C')
     printer.underlineOn()
