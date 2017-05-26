@@ -192,7 +192,7 @@ def main():
                 else:
                     duration = "{0}-{1}".format(time.strftime('%I:%M%p',start_parsed.astimezone(LOCAL_TZ).timetuple()), time.strftime('%I:%M%p',end_parsed.astimezone(LOCAL_TZ).timetuple()))
                     
-                d = {"start": start, "end": end, "location": location, "summary":event['summary'], "duration": duration, "all_day":all_day}
+                d = {"start": start, "end": end, "location": location, "summary":event['summary'].encode('utf-8'), "duration": duration, "all_day":all_day}
                 output.append(d)
                 #print("{0}: {1} {2}".format(duration, event['summary'],location))
             ordered = sorted(output, key=lambda k: k['start']) 
