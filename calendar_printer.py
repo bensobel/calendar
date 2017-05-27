@@ -25,6 +25,8 @@ import dateutil
 import dateutil.parser
 import dateutil.tz
 
+from library_api import get_lib_hours
+
 PATH_TO_PRINTER = os.path.join(os.getcwd(),'Python-Thermal-Printer')
 
 LOCAL_TZ = dateutil.tz.tzlocal()
@@ -162,6 +164,17 @@ def main():
 
         printer.println("Weather: {0}".format(format_weather(get_weather())))
         printer.feed(1)
+
+        lib = get_lib_hours(today)
+
+        if lib['closed']:
+        	lib_formatted = "Closed"
+        else:
+        	lib_formatted = "{0}-{1}".format(lib['start_time'],lib['end_time'])
+
+        printer.println("Widener: {0}".format(lib_formatted))
+        printer.feed(1)
+
 
         if (len(all_events) > 0):
             printheader("Calendar:")
