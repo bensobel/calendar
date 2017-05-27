@@ -165,7 +165,7 @@ def main():
         printer.println("Weather: {0}".format(format_weather(get_weather())))
         printer.feed(1)
 
-        lib = get_lib_hours(today)
+        lib = get_lib_hours(now)
 
         if lib:
         	if lib['closed']:
