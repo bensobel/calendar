@@ -167,13 +167,13 @@ def main():
 
         lib = get_lib_hours(today)
 
-        if lib['closed']:
-        	lib_formatted = "Closed"
-        else:
-        	lib_formatted = "{0}-{1}".format(lib['start_time'],lib['end_time'])
-
-        printer.println("Widener: {0}".format(lib_formatted))
-        printer.feed(1)
+        if lib:
+        	if lib['closed']:
+        		lib_formatted = "Closed"
+	        else:
+	        	lib_formatted = "{0}-{1}".format(lib['start_time'],lib['end_time'])
+	        printer.println("Widener: {0}".format(lib_formatted))
+	        printer.feed(1)
 
 
         if (len(all_events) > 0):
