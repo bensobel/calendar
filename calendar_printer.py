@@ -221,7 +221,6 @@ def main():
             ordered = sorted(output, key=lambda k: k['start']) 
             for e in ordered:
                 printer.println("{0}: {1} ({2})".format(e['duration'], e['summary'],e['location']))
-                printer.feed(1)
 
         #TODO List#
         if len(todos) > 0:
