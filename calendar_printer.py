@@ -133,13 +133,24 @@ def main():
     #get all calendars
     calendar_list = [item['id'] for item in service.calendarList().list().execute().get('items',[])]
 
-    #ID of my Todoist TODO list
-    TODO_ID = 'bensobel.com_ipvtvckn2pv1u0tafontcqllks@group.calendar.google.com'
-
     #initialize lists of events and todos
     all_events = []
 
     todos = []
+
+    api = todoist.TodoistAPI(settings.TODOIST_TOKEN)
+
+    api.sync_token = '*'
+
+    response = api.sync()
+
+    p = {}
+
+    for z in response['projects']:
+        p[z['id']]=z['name'].encode('utf-8')
+
+    for z in response['items']:
+        todos.append({"task":z['content'].encode('utf-8'),"project":p[z['project_id']]})
 
     #make sure to get all calendars
     for cal in calendar_list:
@@ -148,10 +159,7 @@ def main():
             timeMax=end_of_day.isoformat(), maxResults=10, singleEvents=True,
             orderBy='startTime').execute()
         events = eventsResult.get('items', [])
-        if cal == TODO_ID:
-            todos += events
-        else:
-            all_events += events
+        all_events += events
 
     if (len(all_events) > 0) or (len(todos) > 0):
         output = []
@@ -217,7 +225,7 @@ def main():
         if len(todos) > 0:
             printheader("To-do:")
             for t in todos:
-                printer.println(t['summary'])
+                printer.println("{0} ({1})".format(t['task'],t['project']))
 
         printer.feed(3)
         printer.sleep()
