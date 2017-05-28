@@ -25,6 +25,8 @@ import dateutil
 import dateutil.parser
 import dateutil.tz
 
+import todoist
+
 from library_api import get_lib_hours
 
 PATH_TO_PRINTER = os.path.join(os.getcwd(),'Python-Thermal-Printer')
