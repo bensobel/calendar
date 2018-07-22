@@ -79,10 +79,10 @@ def get_credentials():
     credential_dir = os.path.join(home_dir, '.credentials')
     if not os.path.exists(credential_dir):
         os.makedirs(credential_dir)
-    credential_path = os.path.join(credential_dir,
-                                   'calendar-python-quickstart.json')
+    #credential_path = os.path.join(credential_dir,
+                                   #'calendar-python-quickstart.json')
 
-    store = Storage(credential_path)
+    store = Storage('token.json')
     credentials = store.get()
     if not credentials or credentials.invalid:
         flow = client.flow_from_clientsecrets(CLIENT_SECRET_FILE, SCOPES)

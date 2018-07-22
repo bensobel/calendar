@@ -111,7 +111,7 @@ def main():
     ##
     ## CHANGE HOURS=18 ACCORDINGLY IF YOU PRINT AT A TIME OTHER THAN 06:00 
     ##
-    tmrw = (datetime.datetime.utcnow()+datetime.timedelta(hours=18)).isoformat() + 'Z'
+    tmrw = (datetime.datetime.utcnow()+datetime.timedelta(hours=17, minutes=59)).isoformat() + 'Z'
     local_now = datetime.datetime.now()
 
     #get all calendars
